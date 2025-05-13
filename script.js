@@ -102,43 +102,39 @@ const updateTaskList = () => {
 };
 
 const blaskConfetti = () => {
-    const count = 200,
-  defaults = {
-    origin: { y: 0.7 },
-  };
+const duration = 15 * 1000,
+  animationEnd = Date.now() + duration;
 
-function fire(particleRatio, opts) {
-  confetti(
-    Object.assign({}, defaults, opts, {
-      particleCount: Math.floor(count * particleRatio),
-    })
-  );
+let skew = 1;
+
+function randomInRange(min, max) {
+  return Math.random() * (max - min) + min;
 }
 
-fire(0.25, {
-  spread: 26,
-  startVelocity: 55,
-});
+(function frame() {
+  const timeLeft = animationEnd - Date.now(),
+    ticks = Math.max(200, 500 * (timeLeft / duration));
 
-fire(0.2, {
-  spread: 60,
-});
+  skew = Math.max(0.8, skew - 0.001);
 
-fire(0.35, {
-  spread: 100,
-  decay: 0.91,
-  scalar: 0.8,
-});
+  confetti({
+    particleCount: 1,
+    startVelocity: 0,
+    ticks: ticks,
+    origin: {
+      x: Math.random(),
+      // since particles fall down, skew start toward the top
+      y: Math.random() * skew - 0.2,
+    },
+    colors: ["#ffffff"],
+    shapes: ["circle"],
+    gravity: randomInRange(0.4, 0.6),
+    scalar: randomInRange(0.4, 1),
+    drift: randomInRange(-0.4, 0.4),
+  });
 
-fire(0.1, {
-  spread: 120,
-  startVelocity: 25,
-  decay: 0.92,
-  scalar: 1.2,
-});
-
-fire(0.1, {
-  spread: 120,
-  startVelocity: 45,
-});
+  if (timeLeft > 0) {
+    requestAnimationFrame(frame);
+  }
+})();
 }
